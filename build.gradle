@@ -1,0 +1,104 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.15'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'kr.codepresso'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	runtimeOnly 'com.h2database:h2'
+}
+
+ext {
+	testScores = ["testAddPost":5,
+				  "testDeletePost":5,
+				  "testGetAllPost":5,
+				  "testGetPost":5,
+				  "testGetPost_notFound":10,
+				  "test_bean_post_repo":15,
+				  "test_delete_post":10,
+				  "test_get_all_post":10,
+				  "test_get_post_by_id":15,
+				  "test_post_add":10,
+				  "test_get_comment_by_id":5,
+				  "test_find_comment_by_content":5,
+	]
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	testLogging {
+		showStandardStreams = false
+		showCauses = false
+		showExceptions = false
+		showStackTraces = false
+		events "passed", "failed"
+	}
+}
+
+
+import java.security.MessageDigest
+
+tasks.register('checkDirectoryChecksums') {
+	doLast {
+		def directoryPath = 'path/to/your/directory' // Replace this with your directory path
+
+		def storedChecksums = [
+				'PostControllerTest.java': 'storedChecksum1', // Replace with actual file names and stored checksums
+				'PostServiceTests.java': 'storedChecksum2' // Add more entries as needed
+		]
+
+		def directory = new File(directoryPath)
+		def files = directory.listFiles()
+
+		files.each { file ->
+			if (file.isFile()) {
+				def fileName = file.getName()
+				def storedChecksum = storedChecksums[fileName]
+
+				if (storedChecksum) {
+					def digest = MessageDigest.getInstance('SHA-256')
+
+					file.eachByte(4096) { buffer, bytesRead ->
+						digest.update(buffer, 0, bytesRead)
+					}
+
+					def currentChecksum = digest.digest().encodeHex().toString()
+
+					if (currentChecksum.equals(storedChecksum)) {
+						println "Checksum for file $fileName matches the stored value."
+					} else {
+						println "Checksum for file $fileName has changed."
+					}
+				} else {
+					println "No stored checksum found for file $fileName."
+				}
+			}
+		}
+	}
+}
