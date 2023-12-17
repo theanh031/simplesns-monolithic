@@ -15,7 +15,8 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public Post addPost(String title, String content) {
 		Post newPost = new Post(title, content);
-		return postMapper.save(newPost);
+		postMapper.save(newPost);
+		return newPost;
 	}
 
 	@Override

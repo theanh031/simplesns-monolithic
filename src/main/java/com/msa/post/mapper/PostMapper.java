@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Mapper
 public interface PostMapper {
-    Post save(@Param("post") Post post);
+    void save(@Param("post") Post post);
     Optional<Post> findById(@Param("id") int id);
     
     List<Post> findAll();
